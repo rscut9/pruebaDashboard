@@ -10,12 +10,36 @@ from .forms import CreateUserForm
 client = MongoClient('mongodb://admin:admin123@mongodb:27017/?authMechanism=SCRAM-SHA-1&authSource=admin')
 mydatabase = client.dashboard
 
+
 def home(request):
     return render(request, 'home.html')
 
 def exit(request):
     logout(request)
     return redirect('home')
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('base.html')  # O redirecciona a la página que desees después del inicio de sesión exitoso
+        else:
+            messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
+    return render(request, 'login.html')
+
+def create_user(request):
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = CreateUserForm()
+
+    return render(request, 'crear_usuario.html', {'form': form})
 
 @login_required
 # Mostrar la lista de colecciones disponibles
@@ -58,34 +82,3 @@ def mostrar_coleccion(request):
         print(f"Error: {e}")
         # Redirige a la página 'error_template' con el mensaje de error
         return render(request, 'error_template.html', {'error_message': str(e)})
-
-def create_user(request):
-    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            print("Formulario es válido. Intentando guardar...")
-            try:
-                form.save()
-                print("Usuario creado exitosamente.")
-                return redirect('home')
-            except Exception as e:
-                print("Error al guardar el usuario:", e)
-        else:
-            print("Formulario no es válido.")
-    else:
-        form = CreateUserForm()
-
-    return render(request, 'crear_usuario.html', {'form': form})
-
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('base.html')  # O redirecciona a la página que desees después del inicio de sesión exitoso
-        else:
-            messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
-    return render(request, 'login.html')

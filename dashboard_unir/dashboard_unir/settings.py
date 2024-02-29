@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-yf_^+r5_b(nh&pna%=igz796+zb%&38isa=+sp#3$gu#ud55ie
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = []
 
 
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard_app.apps.DashboardAppConfig',
+    'dashboard_app.signals'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -116,11 +117,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 """
 
-
-
-
-
-#AUTHENTICATION_BACKENDS = ['dashboard_app.mongo_auth_backend.MongoAuthBackend']
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 #MONGO_DATABASE_URI = 'mongodb://admin:admin123@mongodb:27017/?authMechanism=SCRAM-SHA-1&authSource=admin'
